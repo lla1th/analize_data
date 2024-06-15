@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Docker Build, Push, and Deploy
 
 on:
   workflow_dispatch:
@@ -31,5 +31,14 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_NAME }}:latest
 
-      - name: Run hello-world image
-        run: docker run hello-world
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_NAME }}:latest
+            docker stop my-container || true
+            docker rm my-container || true
+            docker run -d --name my-container ${{ secrets.DOCKER_NAME }}:latest

@@ -4,14 +4,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
     services:
       docker:
         image: docker:dind
         options: --privileged
-        ports:
-          - 2375:2375
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -25,7 +23,7 @@ jobs:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PWD }}
 
-      - name: Build and push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -33,16 +31,5 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_NAME }}:latest
 
-      - name: Setup Docker CLI
-        run: |
-          mkdir -p ~/.docker/cli-plugins/
-          wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O ~/.docker/cli-plugins/docker-compose
-          chmod +x ~/.docker/cli-plugins/docker-compose
-          echo "DOCKER_HOST=tcp://docker:2375" >> $GITHUB_ENV
-          docker info
-
-      - name: Run Docker in Docker to demonstrate DinD
-        run: |
-          docker run hello-world
-          docker images
-          docker ps -a
+      - name: Run hello-world image
+        run: docker run hello-world

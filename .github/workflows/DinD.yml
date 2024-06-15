@@ -38,7 +38,7 @@ jobs:
           mkdir -p ~/.docker/cli-plugins/
           wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O ~/.docker/cli-plugins/docker-compose
           chmod +x ~/.docker/cli-plugins/docker-compose
-          echo "DOCKER_HOST=tcp://localhost:2375" >> $GITHUB_ENV
+          echo "DOCKER_HOST=tcp://docker:2375" >> $GITHUB_ENV
           docker info
 
       - name: Run Docker in Docker to demonstrate DinD

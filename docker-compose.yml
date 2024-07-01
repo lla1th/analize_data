@@ -1,0 +1,26 @@
+version: '3.8'
+
+x-base:
+  &base
+  networks:
+    - night_net
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:16.0-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: test_test
+    volumes:
+      - ./postgres/db_backups:/backups
+      - ./postgres/pg:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+
+volumes:
+  db_data:
